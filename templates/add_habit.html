@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Habit - DayGraph</title>
+</head>
+
+<body>
+
+    <h1>Add Habit</h1>
+
+    <form action="/add-habit" method="POST">
+
+        <div>
+            <label for="name">Habit Name</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="unit">Unit</label>
+            <input type="text" id="unit" name="unit" required>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="direction">Direction</label>
+            <select id="direction" name="direction" required>
+                <option value="higher">Higher is better</option>
+                <option value="lower">Lower is better</option>
+            </select>
+        </div>
+
+        <br>
+
+        <button type="submit">Save Habit</button>
+
+    </form>
+
+</body>
+</html>
