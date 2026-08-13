@@ -6,7 +6,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "DayGraph is running!"
+    conn = get_db_connection()
+    habits = conn.execute(
+        "SELECT * FROM habits ORDER BY id"
+    ).fetchall()
+    conn.close()
+    return render_template('home.html', habits=habits)
 
 
 @app.route('/add-habit', methods=['GET', 'POST'])

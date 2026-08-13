@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DayGraph</title>
+</head>
+
+<body>
+
+    <h1>DayGraph</h1>
+
+    <h2>Your Habits</h2>
+
+    {% if habits %}
+        {% for habit in habits %}
+            <div>
+                <h3>{{ habit['name'] }}</h3>
+                <p>Unit: {{ habit['unit'] }}</p>
+                <p>
+                    Direction:
+                    {% if habit['direction'] == 'higher' %}
+                        Higher is better
+                    {% else %}
+                        Lower is better
+                    {% endif %}
+                </p>
+            </div>
+
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>No habits created yet.</p>
+    {% endif %}
+
+    <a href="/add-habit">
+        <button>+ Add Habit</button>
+    </a>
+
+</body>
+</html>
