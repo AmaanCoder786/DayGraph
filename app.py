@@ -13,6 +13,20 @@ def home():
     conn.close()
     return render_template('home.html', habits=habits)
 
+@app.route('/habit/<int:habit_id>')
+def habit_page(habit_id):
+    conn = get_db_connection()
+    habit = conn.execute(
+        "SELECT * FROM habits WHERE id = ?", (habit_id,)
+    ).fetchone()
+
+    conn.close()
+
+    if habit is None:
+        return "Habit not found", 404
+
+    return render_template('habit.html', habit=habit)
+
 
 @app.route('/add-habit', methods=['GET', 'POST'])
 def add_habit():

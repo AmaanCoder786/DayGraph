@@ -15,7 +15,9 @@
     {% if habits %}
         {% for habit in habits %}
             <div>
-                <h3>{{ habit['name'] }}</h3>
+                <h3><a href="{{url_for('habit_page', habit_id=habit['id'])}}">
+                    {{ habit['name'] }}
+                </a></h3>
                 <p>Unit: {{ habit['unit'] }}</p>
                 <p>
                     Direction:
