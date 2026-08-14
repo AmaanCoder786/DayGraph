@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS entries (
     habit_id INTEGER NOT NULL,
     date TEXT NOT NULL,
     value REAL NOT NULL,
+    created_at TEXT NOT NULL,
     
     FOREIGN KEY (habit_id) REFERENCES habits (id)
 )
