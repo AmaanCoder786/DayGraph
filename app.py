@@ -38,12 +38,22 @@ def habit_page(habit_id):
         (habit_id, today)
     ).fetchall()
 
+    total = conn.execute(
+        """
+        SELECT COALESCE(SUM(value), 0) AS total
+        FROM entries
+        WHERE habit_id = ? AND date = ?
+        """,
+        (habit_id, today)
+    ).fetchone()['total']
+
     conn.close()
 
     return render_template(
         'habit.html',
         habit=habit,
-        entries=entries
+        entries=entries,
+        total=total
     )
 
 @app.route('/habit/<int:habit_id>/add-entry', methods=['POST'])
