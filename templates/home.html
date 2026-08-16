@@ -10,34 +10,72 @@
 
     <h1>DayGraph</h1>
 
-    <h2>Your Habits</h2>
+    <div>
+        {% if habit_data %}
+            {% for item in habit_data %}
+                <div>
+                    <a href="{{ url_for('habit_page', habit_id=item['habit']['id']) }}">
+                        <h2>{{ item['habit']['name'] }}</h2>
+                        <div style="width: 100%; max-width: 500px; height: 250px">
+                            <canvas 
+                                id="chart-{{ item['habit']['id'] }}"
+                                data-labels='{{ item["daily_totals"] | map(attribute="date") | list | tojson }}'
+                                data-values='{{ item["daily_totals"] | map(attribute="total") | list | tojson }}'
+                                data-name="{{ item['habit']['name'] }}">
+                            </canvas>
+                        </div>
+                    </a>
+                </div>
+                <hr>
+            {% endfor %}
+        {% else %}
+                <p>No habits added yet.</p>
+        {% endif %}
+    </div>
 
-    {% if habits %}
-        {% for habit in habits %}
-            <div>
-                <h3><a href="{{url_for('habit_page', habit_id=habit['id'])}}">
-                    {{ habit['name'] }}
-                </a></h3>
-                <p>Unit: {{ habit['unit'] }}</p>
-                <p>
-                    Direction:
-                    {% if habit['direction'] == 'higher' %}
-                        Higher is better
-                    {% else %}
-                        Lower is better
-                    {% endif %}
-                </p>
-            </div>
 
-            <hr>
-        {% endfor %}
-    {% else %}
-        <p>No habits created yet.</p>
-    {% endif %}
-
-    <a href="/add-habit">
+    <a href="{{ url_for('add_habit') }}">
         <button>+ Add Habit</button>
     </a>
+
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const charts = document.querySelectorAll("canvas[id^='chart-']");
+
+        charts.forEach(function (canvas) {
+
+            const labels = JSON.parse(canvas.dataset.labels);
+            const values = JSON.parse(canvas.dataset.values);
+            const habitName = canvas.dataset.name;
+
+            new Chart(canvas, {
+                type: "line",
+
+                data: {
+                    labels: labels,
+
+                    datasets: [{
+                        label: habitName,
+                        data: values,
+                        tension: 0.3
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+
 
 </body>
 </html>

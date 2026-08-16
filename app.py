@@ -11,8 +11,31 @@ def home():
     habits = conn.execute(
         "SELECT * FROM habits ORDER BY id"
     ).fetchall()
+
+    habit_data = []
+
+    for habit in habits:
+        daily_totals = conn.execute(
+            """
+            SELECT date, SUM(value) AS total
+            FROM entries
+            WHERE habit_id = ?
+            GROUP BY date
+            ORDER BY date ASC
+            """,
+            (habit['id'],)
+        ).fetchall()
+        habit_data.append({
+            'habit': habit,
+            'daily_totals': daily_totals
+        })
+
     conn.close()
-    return render_template('home.html', habits=habits)
+
+    return render_template(
+        'home.html',
+        habit_data=habit_data
+    )
 
 @app.route('/habit/<int:habit_id>')
 def habit_page(habit_id):
@@ -100,7 +123,6 @@ def add_entry(habit_id):
     conn.close()
 
     return redirect(f'/habit/{habit_id}')
-
 
 @app.route('/add-habit', methods=['GET', 'POST'])
 def add_habit():
