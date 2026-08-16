@@ -53,7 +53,7 @@ def habit_page(habit_id):
         FROM entries
         WHERE habit_id = ?
         GROUP BY date
-        ORDER BY date DESC
+        ORDER BY date ASC
         """,
         (habit_id,)
     ).fetchall()

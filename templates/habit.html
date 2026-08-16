@@ -56,18 +56,60 @@
 
     <hr>
 
-    <h2>Daily History</h2>
+    
+    <h2>Progress</h2>
 
-    {% if daily_totals %}
-        {% for day in daily_totals %}
-            <p>
-                {{ day['date'] }} — {{ day['total'] }} {{ habit['unit'] }}
-            </p>
-        {% endfor %}
-    {% else %}
-        <p>No historical data yet.</p>
-    {% endif %}
+    <div style="width: 100%; max-width: 650px; height: 300px;">
+        <canvas id="habitChart"></canvas>
+    </div>
+    
     <a href="/">← Back to Home</a>
+    <div
+        id="chartData"
+        data-labels='{{ daily_totals | map(attribute="date") | list | tojson }}'
+        data-values='{{ daily_totals | map(attribute="total") | list | tojson }}'>
+    </div>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const chartData = document.getElementById('chartData');
+
+        const labels = JSON.parse(chartData.dataset.labels);
+        const values = JSON.parse(chartData.dataset.values);
+
+        const ctx = document.getElementById('habitChart');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '{{ habit["name"] }}',
+                    data: values,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' {{ habit["unit"] }}';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
