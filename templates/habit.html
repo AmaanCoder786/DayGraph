@@ -54,7 +54,19 @@
         <p>No entries recorded today.</p>
     {% endif %}
 
-    
+    <hr>
+
+    <h2>Daily History</h2>
+
+    {% if daily_totals %}
+        {% for day in daily_totals %}
+            <p>
+                {{ day['date'] }} — {{ day['total'] }} {{ habit['unit'] }}
+            </p>
+        {% endfor %}
+    {% else %}
+        <p>No historical data yet.</p>
+    {% endif %}
     <a href="/">← Back to Home</a>
 
 </body>

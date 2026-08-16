@@ -47,13 +47,25 @@ def habit_page(habit_id):
         (habit_id, today)
     ).fetchone()['total']
 
+    daily_totals = conn.execute(
+        """
+        SELECT date, SUM(value) AS total
+        FROM entries
+        WHERE habit_id = ?
+        GROUP BY date
+        ORDER BY date DESC
+        """,
+        (habit_id,)
+    ).fetchall()
+
     conn.close()
 
     return render_template(
         'habit.html',
         habit=habit,
         entries=entries,
-        total=total
+        total=total,
+        daily_totals=daily_totals
     )
 
 @app.route('/habit/<int:habit_id>/add-entry', methods=['POST'])
