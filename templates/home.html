@@ -4,39 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DayGraph</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>DayGraph</h1>
+    <header class="dashboard-header">
+        <h1>DayGraph</h1>
+        
+        <a href="{{ url_for('add_habit') }}" class="add-habit-button">
+            + Add Habit
+        </a>
+    </header>
 
-    <div>
+    <h2 class="progress-title">Your Progress</h2>
+
+    <div class="dashboard">
         {% if habit_data %}
-            {% for item in habit_data %}
-                <div>
-                    <a href="{{ url_for('habit_page', habit_id=item['habit']['id']) }}">
-                        <h2>{{ item['habit']['name'] }}</h2>
-                        <div style="width: 100%; max-width: 500px; height: 250px">
-                            <canvas 
-                                id="chart-{{ item['habit']['id'] }}"
-                                data-labels='{{ item["daily_totals"] | map(attribute="date") | list | tojson }}'
-                                data-values='{{ item["daily_totals"] | map(attribute="total") | list | tojson }}'
-                                data-name="{{ item['habit']['name'] }}">
-                            </canvas>
-                        </div>
-                    </a>
-                </div>
-                <hr>
-            {% endfor %}
+            <div class="habit-grid">
+                {% for item in habit_data %}
+                    <div class="habit-card">
+                        <a href="{{ url_for('habit_page', habit_id=item['habit']['id']) }}">
+                            <h2>{{ item['habit']['name'] }}</h2>
+                            <div class="chart-container">
+                                <canvas
+                                    id="chart-{{ item['habit']['id'] }}"
+                                    data-labels='{{ item["daily_totals"] | map(attribute="date") | list | tojson }}'
+                                    data-values='{{ item["daily_totals"] | map(attribute="total") | list | tojson }}'
+                                    data-name="{{ item['habit']['name'] }}">
+                                </canvas>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-                <p>No habits added yet.</p>
+            <p>No habits added yet.</p>
         {% endif %}
     </div>
-
-
-    <a href="{{ url_for('add_habit') }}">
-        <button>+ Add Habit</button>
-    </a>
 
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -58,16 +64,45 @@
                     datasets: [{
                         label: habitName,
                         data: values,
-                        tension: 0.3
+                        tension: 0.3,
+                        borderColor: "#9b6de3",
+                        backgroundColor: "rgba(155, 109, 227, 0.15)",
+                        pointBackgroundColor: "#9b6de3",
+                        pointBorderColor: "#9b6de3",
+                        pointRadius: 4,
+                        fill: true
                     }]
                 },
 
                 options: {
                     responsive: true,
 
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: "#f3eef8"
+                            }
+                        }
+                    },
+
                     scales: {
+                        x: {
+                            ticks: {
+                                color: "#b9a9c9"
+                            },
+                            grid: {
+                                color: "rgba(255, 255, 255, 0.05)"
+                            }
+                        },
+
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                color: "#b9a9c9"
+                            },
+                            grid: {
+                                color: "rgba(255, 255, 255, 0.05)"
+                            }
                         }
                     }
                 }
@@ -75,7 +110,6 @@
 
         });
     </script>
-
 
 </body>
 </html>
