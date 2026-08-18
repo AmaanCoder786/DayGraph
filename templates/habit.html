@@ -4,112 +4,217 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ habit['name'] }} - DayGraph</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 
-    <h1>{{ habit['name'] }}</h1>
+<main class="habit-page">
 
-    <p>Unit: {{ habit['unit'] }}</p>
+    <!-- ============================================================
+         HABIT HEADER
+         ============================================================ -->
 
-    <p>
-        Direction:
-        {% if habit['direction'] == 'higher' %}
-            Higher is better
-        {% else %}
-            Lower is better
-        {% endif %}
-    </p>
 
-    <hr>
+    <header class="habit-header">
+        <div class="habit-title-row">
+            <a href="{{ url_for('home') }}" class="back-button" title="Back to Home">
+                ←
+            </a>
+            <div>
+                <h1>{{ habit['name'] }}</h1>
+                <p class="habit-meta">
+                    <span>{{ habit['unit'] }}</span>
+                    ·
+                    {% if habit['direction'] == 'higher' %}
+                        Higher is better
+                    {% else %}
+                        Lower is better
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </header>
 
-    <h2>Today's Total</h2>
+    <div class="habit-summary-grid">
 
-    <p>{{ total }} {{ habit['unit'] }}</p>
-
-    <hr>
-
-    <h2>Add Today's Entry</h2>
-
-    <form action="{{ url_for('add_entry', habit_id=habit['id']) }}" method="POST">
-        <label for="value">Value</label>
-        <input type="number" id="value" name="value" step="any" min="0" required>
-        <button type="submit">Add Entry</button>
-    </form>
-
-    <br>
-
-    <hr>
-
-    <h2>Today's Entries</h2>
-
-    {% if entries %}
-        {% for entry in entries %}
-            <p>
-                {{ entry['value'] }} {{ habit['unit'] }}
-                <small>{{ entry['created_at'] }}</small>
-            </p>
-        {% endfor %}
-    {% else %}
-        <p>No entries recorded today.</p>
-    {% endif %}
-
-    <hr>
-
+        <!-- TODAY'S TOTAL -->
+        <section class="habit-section">
+            <h2>Today's Total</h2>
+            <div class="total-box">
+                <span>
+                    {{ "%.0f"|format(total) }} {{ habit['unit'] }}
+                </span>
+            </div>
+        </section>
     
-    <h2>Progress</h2>
-
-    <div style="width: 100%; max-width: 650px; height: 300px;">
-        <canvas id="habitChart"></canvas>
+        <!-- ADD TODAY'S ENTRY -->        
+        <section class="habit-section">
+            <h2>Add Today's Entry</h2>
+    
+            <form
+                class="entry-form"
+                action="{{ url_for('add_entry', habit_id=habit['id']) }}"
+                method="POST"
+            >
+                <label for="value">Value</label>
+    
+                <input
+                    type="number"
+                    id="value"
+                    name="value"
+                    step="any"
+                    min="0"
+                    required
+                >
+    
+                <button type="submit">Add Entry</button>
+            </form>
+        </section>
+    
+    
+        <!-- TODAY'S ENTRIES -->    
+        <section class="habit-section">
+            <h2>Today's Entries</h2>
+    
+            {% if entries %}
+                <div class="entries-list">
+                    {% for entry in entries %}
+                        <div class="entry-row">
+                            <span class="entry-value">
+                                {{ "%.0f"|format(entry['value']) }} {{ habit['unit'] }}
+                            </span>
+    
+                            <span class="entry-time">
+                                {{ entry['display_time'] }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-message">No entries recorded today.</p>
+            {% endif %}
+        </section>
     </div>
-    
-    <a href="/">← Back to Home</a>
+
+
+    <!-- ============================================================
+         PROGRESS GRAPH
+         ============================================================ -->
+
+    <section class="habit-section">
+        <h2>Progress</h2>
+
+        <div class="habit-chart-container">
+            <canvas id="habitChart"></canvas>
+        </div>
+
+        <button id="historyButton" class="history-button">
+            Last 10 Days
+        </button>
+
+        <!-- Historical data remains hidden until the button is clicked -->
+        <div id="historySection" class="history-section">
+            <h3>Last 10 Days</h3>
+
+            {% if daily_totals %}
+                <div class="entries-list">
+                    {% for day in daily_totals[:10] %}
+                        <div class="entry-row">
+                            <span class="entry-value">
+                                {{ day['date'] }}
+                            </span>
+
+                            <span class="entry-time">
+                                {{ day['total'] }} {{ habit['unit'] }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-message">
+                    No historical data available.
+                </p>
+            {% endif %}
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         CHART DATA
+         ============================================================ -->
+
     <div
         id="chartData"
         data-labels='{{ daily_totals | map(attribute="date") | list | tojson }}'
-        data-values='{{ daily_totals | map(attribute="total") | list | tojson }}'>
-    </div>
+        data-values='{{ daily_totals | map(attribute="total") | list | tojson }}'
+    ></div>
+
+</main>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- ============================================================
+     CHART.JS
+     ============================================================ -->
 
-    <script>
-        const chartData = document.getElementById('chartData');
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        const labels = JSON.parse(chartData.dataset.labels);
-        const values = JSON.parse(chartData.dataset.values);
+<script>
+    // Get graph data from the HTML data attributes.
+    const chartData = document.getElementById('chartData');
+    const labels = JSON.parse(chartData.dataset.labels);
+    const values = JSON.parse(chartData.dataset.values);
 
-        const ctx = document.getElementById('habitChart');
+    const ctx = document.getElementById('habitChart');
 
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '{{ habit["name"] }}',
-                    data: values,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
+    // Create the habit progress graph.
+    new Chart(ctx, {
+        type: 'line',
 
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.parsed.y + ' {{ habit["unit"] }}';
-                            }
+        data: {
+            labels: labels,
+
+            datasets: [{
+                label: '{{ habit["name"] }}',
+                data: values,
+                tension: 0.3
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + ' {{ habit["unit"] }}';
                         }
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                }
+            },
+
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
-        });
-    </script>
+        }
+    });
+
+
+    // ============================================================
+    // LAST 10 DAYS TOGGLE
+    // ============================================================
+
+    const historyButton = document.getElementById('historyButton');
+    const historySection = document.getElementById('historySection');
+
+    historyButton.addEventListener('click', function() {
+        historySection.classList.toggle('show');
+        historyButton.classList.toggle('active');
+    });
+</script>
+
 </body>
 </html>

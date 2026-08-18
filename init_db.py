@@ -1,9 +1,24 @@
 import sqlite3
 
+
+# ============================================================
+# DATABASE CONFIGURATION
+# ============================================================
+
 DATABASE = 'database/daygraph.db'
+
+
+# ============================================================
+# DATABASE CONNECTION
+# ============================================================
 
 conn = sqlite3.connect(DATABASE)
 cursor = conn.cursor()
+
+
+# ============================================================
+# HABITS TABLE
+# ============================================================
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS habits (
@@ -14,6 +29,11 @@ CREATE TABLE IF NOT EXISTS habits (
 )
 """)
 
+
+# ============================================================
+# ENTRIES TABLE
+# ============================================================
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,10 +41,16 @@ CREATE TABLE IF NOT EXISTS entries (
     date TEXT NOT NULL,
     value REAL NOT NULL,
     created_at TEXT NOT NULL,
-    
+
+    -- Connect each entry to the habit it belongs to.
     FOREIGN KEY (habit_id) REFERENCES habits (id)
 )
 """)
+
+
+# ============================================================
+# SAVE DATABASE CHANGES
+# ============================================================
 
 conn.commit()
 conn.close()
