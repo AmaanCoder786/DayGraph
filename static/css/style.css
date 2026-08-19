@@ -52,13 +52,6 @@ body {
     margin: 0 0 8px;
     text-transform: capitalize;
 }
-
-.habit-title-row p {
-    margin: 0;
-    color: #b9a9c9;
-    font-size: 1rem;
-}
-
 .habit-meta {
   margin: 0;
   color: #b9a9c9;

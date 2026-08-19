@@ -126,7 +126,7 @@
                             </span>
 
                             <span class="entry-time">
-                                {{ day['total'] }} {{ habit['unit'] }}
+                                {{ "%.0f"|format(day['total']) }} {{ habit['unit'] }}
                             </span>
                         </div>
                     {% endfor %}
