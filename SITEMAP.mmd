@@ -1,8 +1,0 @@
-flowchart TD
-    HOME["Home<br/>/"]
-
-    HOME --> ADD["Add Habit<br/>/add-habit"]
-    HOME --> HABIT["Individual Habit<br/>/habit/&lt;habit_id&gt;"]
-
-    ADD --> DB[("SQLite<br/>habits table")]
-    HABIT --> DB

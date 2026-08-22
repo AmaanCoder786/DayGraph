@@ -1,46 +1,87 @@
-# DayGraph
+# Pulse
 
-A simple personal progress dashboard for tracking habits and measurable daily activities.
+Pulse is a personal progress system designed to bring **planning, tracking, and progress analytics** into one place.
+
+The project is evolving from the original DayGraph tracking application into a broader system for managing what I want to accomplish and measuring what I actually do.
 
 ## Current Status
 
-🚧 Under development
+🚧 Under active development
 
-## Planned Features
+The current version of Pulse provides the foundation for **activity tracking and progress visualization**.
 
-- Add custom habits
-- Track multiple entries per day
+### Currently Working
+
+- Create measurable activities
+- Define an activity unit
+- Define whether higher or lower values are better
+- Record multiple entries per day
 - Automatically calculate daily totals
-- Visualize progress with graphs
-- Daily journaling
-- Notifications for missing daily entries
-- Eventually convert into an installable app
+- View today's entries
+- View historical daily totals
+- Visualize activity progress with graphs
+- View the last 10 days of activity history
+- Responsive dark-themed interface
 
-## Tech Stack
+## Planned Direction
 
-- Python
-- Flask
-- SQLite
-- HTML/CSS
-- JavaScript
-- Chart.js
+Pulse will gradually expand from activity tracking into a complete personal progress system.
 
-## Project Roadmap
+### Planning
 
-### V1 — Core Tracking
-- Dashboard with habit graphs
-- Add new habits
-- Add multiple entries per day
-- Daily totals
-- Today's-entry restriction
-- Historical data visualization
+- Goals
+- Projects
+- Milestones
+- Tasks
+- Task completion tracking
+- Project progress
+- "What should I work on today?" view
+- Remaining work
+- Resume-from-where-I-stopped context
 
-### V2 — Journaling
-- Daily notes
-- Tomorrow's plans
+### Tracking
 
-### V3 — Notifications
-- Alerts when today's entries haven't been recorded
+- Measurable activities
+- Daily entries
+- Historical records
+- Activity streaks
+- Consistency tracking
+- Progress trends
+
+### Analytics
+
+- Daily summaries
+- Weekly summaries
+- Monthly summaries
+- Progress trends
+- Goal progress
+- Project progress
+- Activity statistics
 
 ### Future
-- PWA / mobile version
+
+- Deeper connections between planning and tracking
+- Improved insights
+- Data export/import
+- Optional installable/mobile experience if it becomes useful
+
+## Core Concept
+
+Pulse is built around two connected questions:
+
+> **What do I need to accomplish?**
+
+and
+
+> **What am I actually doing?**
+
+The planning side of Pulse will handle:
+
+```text
+Goals
+  ↓
+Projects
+  ↓
+Milestones
+  ↓
+Tasks

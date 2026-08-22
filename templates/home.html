@@ -1,74 +1,124 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DayGraph</title>
+  <head>
+    <meta charset="UTF-8" />
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<body>
+    <title>Pulse</title>
 
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+
+  <body>
     <!-- ============================================================
-         DASHBOARD HEADER
+         PULSE DASHBOARD HEADER
          ============================================================ -->
 
     <header class="dashboard-header">
-        <h1>DayGraph</h1>
+      <div>
+        <h1>Pulse</h1>
 
-        <a href="{{ url_for('add_habit') }}" class="add-habit-button">
-            + Add Habit
-        </a>
+        <p class="dashboard-subtitle">Your personal progress system</p>
+      </div>
+
+      <a href="{{ url_for('add_habit') }}" class="add-habit-button">
+        + Add Activity
+      </a>
     </header>
 
-
     <!-- ============================================================
-         PROGRESS SECTION
+         TODAY'S PULSE SUMMARY
          ============================================================ -->
 
-    <h2 class="progress-title">Your Progress</h2>
+    <section class="today-summary">
+      <div class="summary-header">
+        <h2>Today</h2>
+
+        <p>Your activity at a glance.</p>
+      </div>
+
+      <div class="summary-grid">
+        <!-- ACTIVITIES -->
+
+        <div class="summary-card">
+          <span class="summary-label"> Activities </span>
+
+          <strong> {{ activity_count }} </strong>
+        </div>
+
+        <!-- ENTRIES -->
+
+        <div class="summary-card">
+          <span class="summary-label"> Entries Today </span>
+
+          <strong> {{ entry_count }} </strong>
+        </div>
+
+        <!-- ACTIVE TODAY -->
+
+        <div class="summary-card">
+            <span class="summary-label">
+                Active Today
+            </span>
+            <strong>
+                {{ active_today }}
+            </strong>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         ACTIVITIES
+         ============================================================ -->
+
+    <h2 class="progress-title">Your Activities</h2>
 
     <main class="dashboard">
+      {% if habit_data %}
 
-        {% if habit_data %}
+      <!-- Activity cards and progress graphs -->
 
-            <!-- Habit cards and their progress graphs -->
-            <div class="habit-grid">
+      <div class="habit-grid">
+        {% for item in habit_data %}
 
-                {% for item in habit_data %}
+        <div class="habit-card">
+          <a
+            href="{{ url_for(
+                                'habit_page',
+                                habit_id=item['habit']['id']
+                            ) }}"
+          >
+            <h2>{{ item['habit']['name'] }}</h2>
 
-                    <div class="habit-card">
-
-                        <a href="{{ url_for('habit_page', habit_id=item['habit']['id']) }}">
-
-                            <h2>{{ item['habit']['name'] }}</h2>
-
-                            <div class="chart-container">
-                                <canvas
-                                    id="chart-{{ item['habit']['id'] }}"
-                                    data-labels='{{ item["daily_totals"] | map(attribute="date") | list | tojson }}'
-                                    data-values='{{ item["daily_totals"] | map(attribute="total") | list | tojson }}'
-                                    data-name="{{ item['habit']['name'] }}"
-                                ></canvas>
-                            </div>
-
-                        </a>
-
-                    </div>
-
-                {% endfor %}
-
+            <div class="chart-container">
+              <canvas
+                id="chart-{{ item['habit']['id'] }}"
+                data-labels='{{ item["daily_totals"] | map(attribute="date") | list | tojson }}'
+                data-values='{{ item["daily_totals"] | map(attribute="total") | list | tojson }}'
+                data-name="{{ item['habit']['name'] }}"
+              ></canvas>
             </div>
+          </a>
+        </div>
 
-        {% else %}
+        {% endfor %}
+      </div>
 
-            <p>No habits added yet.</p>
+      {% else %}
 
-        {% endif %}
+      <div class="empty-dashboard">
+        <p>No activities added yet.</p>
 
+        <a href="{{ url_for('add_habit') }}" class="add-habit-button">
+          + Add Your First Activity
+        </a>
+      </div>
+
+      {% endif %}
     </main>
-
 
     <!-- ============================================================
          CHART.JS
@@ -77,76 +127,87 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // Find all habit graphs on the dashboard.
-        const charts = document.querySelectorAll("canvas[id^='chart-']");
+      // Find all activity graphs on the dashboard.
 
-        charts.forEach(function(canvas) {
+      const charts = document.querySelectorAll("canvas[id^='chart-']");
 
-            // Get graph data from the HTML data attributes.
-            const labels = JSON.parse(canvas.dataset.labels);
-            const values = JSON.parse(canvas.dataset.values);
-            const habitName = canvas.dataset.name;
+      charts.forEach(function (canvas) {
+        // Get graph data from HTML data attributes.
 
-            // Create the habit progress graph.
-            new Chart(canvas, {
-                type: "line",
+        const labels = JSON.parse(canvas.dataset.labels);
 
-                data: {
-                    labels: labels,
+        const values = JSON.parse(canvas.dataset.values);
 
-                    datasets: [{
-                        label: habitName,
-                        data: values,
-                        tension: 0.3,
+        const activityName = canvas.dataset.name;
 
-                        // Dark-purple DayGraph theme
-                        borderColor: "#9b6de3",
-                        backgroundColor: "rgba(155, 109, 227, 0.15)",
-                        pointBackgroundColor: "#9b6de3",
-                        pointBorderColor: "#9b6de3",
-                        pointRadius: 4,
-                        fill: true
-                    }]
+        // Create the activity progress graph.
+
+        new Chart(canvas, {
+          type: "line",
+
+          data: {
+            labels: labels,
+
+            datasets: [
+              {
+                label: activityName,
+
+                data: values,
+
+                tension: 0.3,
+
+                borderColor: "#9b6de3",
+
+                backgroundColor: "rgba(155, 109, 227, 0.15)",
+
+                pointBackgroundColor: "#9b6de3",
+
+                pointBorderColor: "#9b6de3",
+
+                pointRadius: 4,
+
+                fill: true,
+              },
+            ],
+          },
+
+          options: {
+            responsive: true,
+
+            plugins: {
+              legend: {
+                labels: {
+                  color: "#f3eef8",
+                },
+              },
+            },
+
+            scales: {
+              x: {
+                ticks: {
+                  color: "#b9a9c9",
                 },
 
-                options: {
-                    responsive: true,
+                grid: {
+                  color: "rgba(255, 255, 255, 0.05)",
+                },
+              },
 
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: "#f3eef8"
-                            }
-                        }
-                    },
+              y: {
+                beginAtZero: true,
 
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: "#b9a9c9"
-                            },
+                ticks: {
+                  color: "#b9a9c9",
+                },
 
-                            grid: {
-                                color: "rgba(255, 255, 255, 0.05)"
-                            }
-                        },
-
-                        y: {
-                            beginAtZero: true,
-
-                            ticks: {
-                                color: "#b9a9c9"
-                            },
-
-                            grid: {
-                                color: "rgba(255, 255, 255, 0.05)"
-                            }
-                        }
-                    }
-                }
-            });
+                grid: {
+                  color: "rgba(255, 255, 255, 0.05)",
+                },
+              },
+            },
+          },
         });
+      });
     </script>
-
-</body>
+  </body>
 </html>

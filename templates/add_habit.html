@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Habit - DayGraph</title>
+
+    <title>Add Activity - Pulse</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -13,21 +14,26 @@
 <main class="habit-page">
 
     <!-- ============================================================
-         ADD HABIT HEADER
+         ADD ACTIVITY HEADER
          ============================================================ -->
 
     <header class="habit-header">
+
         <a href="{{ url_for('home') }}" class="back-link">
-            ← Back to Home
+            ← Back to Pulse
         </a>
 
-        <h1>Add Habit</h1>
-        <p>Create a new habit to start tracking your progress.</p>
+        <h1>Add Activity</h1>
+
+        <p>
+            Create a measurable activity to start tracking your progress.
+        </p>
+
     </header>
 
 
     <!-- ============================================================
-         ADD HABIT FORM
+         ADD ACTIVITY FORM
          ============================================================ -->
 
     <section class="habit-section">
@@ -39,15 +45,17 @@
         >
 
             <div>
-                <label for="name">Habit Name</label>
+                <label for="name">Activity Name</label>
 
                 <input
                     type="text"
                     id="name"
                     name="name"
+                    placeholder="e.g. Running"
                     required
                 >
             </div>
+
 
             <div>
                 <label for="unit">Unit</label>
@@ -56,9 +64,11 @@
                     type="text"
                     id="unit"
                     name="unit"
+                    placeholder="e.g. km"
                     required
                 >
             </div>
+
 
             <div>
                 <label for="direction">Direction</label>
@@ -68,12 +78,22 @@
                     name="direction"
                     required
                 >
-                    <option value="higher">Higher is better</option>
-                    <option value="lower">Lower is better</option>
+
+                    <option value="higher">
+                        Higher is better
+                    </option>
+
+                    <option value="lower">
+                        Lower is better
+                    </option>
+
                 </select>
             </div>
 
-            <button type="submit">Save Habit</button>
+
+            <button type="submit">
+                Save Activity
+            </button>
 
         </form>
 

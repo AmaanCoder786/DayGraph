@@ -4,6 +4,7 @@ from database.db import get_db_connection
 
 app = Flask(__name__)
 
+
 # ============================================================
 # HOME PAGE
 # ============================================================
@@ -12,13 +13,14 @@ app = Flask(__name__)
 def home():
     conn = get_db_connection()
 
+    # Get all activities
     habits = conn.execute(
         "SELECT * FROM habits ORDER BY id"
     ).fetchall()
 
     habit_data = []
 
-    # Get daily totals for each habit's progress graph
+    # Get daily totals for each activity's progress graph
     for habit in habits:
         daily_totals = conn.execute(
             """
@@ -36,22 +38,55 @@ def home():
             'daily_totals': daily_totals
         })
 
+    # ========================================================
+    # TODAY'S PULSE SUMMARY
+    # ========================================================
+
+    today = datetime.now().date().isoformat()
+
+    # Number of activities currently being tracked
+    activity_count = len(habits)
+
+    # Number of entries recorded today
+    entry_count = conn.execute(
+        """
+        SELECT COUNT(*)
+        FROM entries
+        WHERE date = ?
+        """,
+        (today,)
+    ).fetchone()[0]
+
+   # Number of activities that have at least one entry today
+    active_today = conn.execute(
+        """
+        SELECT COUNT(DISTINCT habit_id)
+        FROM entries
+        WHERE date = ?
+        """,
+        (today,)
+    ).fetchone()[0]
+
     conn.close()
 
     return render_template(
         'home.html',
-        habit_data=habit_data
+        habit_data=habit_data,
+        activity_count=activity_count,
+        entry_count=entry_count,
+        active_today=active_today
     )
 
+
 # ============================================================
-# INDIVIDUAL HABIT PAGE
+# INDIVIDUAL ACTIVITY PAGE
 # ============================================================
 
 @app.route('/habit/<int:habit_id>')
 def habit_page(habit_id):
     conn = get_db_connection()
 
-    # Get the selected habit
+    # Get the selected activity
     habit = conn.execute(
         "SELECT * FROM habits WHERE id = ?",
         (habit_id,)
@@ -59,7 +94,7 @@ def habit_page(habit_id):
 
     if habit is None:
         conn.close()
-        return "Habit not found", 404
+        return "Activity not found", 404
 
     today = datetime.now().date().isoformat()
 
@@ -116,8 +151,9 @@ def habit_page(habit_id):
         daily_totals=daily_totals
     )
 
+
 # ============================================================
-# ADD ENTRY TO A HABIT
+# ADD ENTRY TO AN ACTIVITY
 # ============================================================
 
 @app.route('/habit/<int:habit_id>/add-entry', methods=['POST'])
@@ -134,7 +170,7 @@ def add_entry(habit_id):
 
     conn = get_db_connection()
 
-    # Make sure the habit exists before adding the entry
+    # Make sure the activity exists before adding the entry
     habit = conn.execute(
         "SELECT * FROM habits WHERE id = ?",
         (habit_id,)
@@ -142,7 +178,7 @@ def add_entry(habit_id):
 
     if habit is None:
         conn.close()
-        return "Habit not found", 404
+        return "Activity not found", 404
 
     conn.execute(
         """
@@ -157,8 +193,9 @@ def add_entry(habit_id):
 
     return redirect(url_for('habit_page', habit_id=habit_id))
 
+
 # ============================================================
-# ADD NEW HABIT
+# ADD NEW ACTIVITY
 # ============================================================
 
 @app.route('/add-habit', methods=['GET', 'POST'])
@@ -184,6 +221,7 @@ def add_habit():
         return redirect(url_for('home'))
 
     return render_template('add_habit.html')
+
 
 # ============================================================
 # RUN APPLICATION
