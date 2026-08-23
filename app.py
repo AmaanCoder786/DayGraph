@@ -20,8 +20,13 @@ def home():
 
     habit_data = []
 
-    # Get daily totals for each activity's progress graph
+    # Today's date
+    today = datetime.now().date().isoformat()
+
+    # Get daily totals and today's total for each activity
     for habit in habits:
+
+        # Daily totals for the progress graph
         daily_totals = conn.execute(
             """
             SELECT date, SUM(value) AS total
@@ -33,16 +38,38 @@ def home():
             (habit['id'],)
         ).fetchall()
 
+        # Today's total for this activity
+        today_total = conn.execute(
+            """
+            SELECT COALESCE(SUM(value), 0) AS total
+            FROM entries
+            WHERE habit_id = ? AND date = ?
+            """,
+            (habit['id'], today)
+        ).fetchone()['total']
+
+        # Check whether this activity has been recorded today
+        today_entry = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM entries
+            WHERE habit_id = ? AND date = ?
+            """,
+            (habit['id'], today)
+        ).fetchone()[0]
+
+        is_active_today = today_entry > 0
+
         habit_data.append({
             'habit': habit,
-            'daily_totals': daily_totals
+            'daily_totals': daily_totals,
+            'today_total': today_total,
+            'is_active_today': is_active_today
         })
 
     # ========================================================
     # TODAY'S PULSE SUMMARY
     # ========================================================
-
-    today = datetime.now().date().isoformat()
 
     # Number of activities currently being tracked
     activity_count = len(habits)
@@ -57,7 +84,7 @@ def home():
         (today,)
     ).fetchone()[0]
 
-   # Number of activities that have at least one entry today
+    # Number of activities that have at least one entry today
     active_today = conn.execute(
         """
         SELECT COUNT(DISTINCT habit_id)
@@ -103,7 +130,7 @@ def habit_page(habit_id):
         """
         SELECT * FROM entries
         WHERE habit_id = ? AND date = ?
-        ORDER BY created_at
+        ORDER BY created_at DESC
         """,
         (habit_id, today)
     ).fetchall()

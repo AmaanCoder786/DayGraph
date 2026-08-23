@@ -61,13 +61,11 @@
         <!-- ACTIVE TODAY -->
 
         <div class="summary-card">
-            <span class="summary-label">
-                Active Today
-            </span>
-            <strong>
-                {{ active_today }}
-            </strong>
+          <span class="summary-label"> Active Today </span>
+
+          <strong> {{ active_today }} </strong>
         </div>
+      </div>
     </section>
 
     <!-- ============================================================
@@ -87,11 +85,43 @@
         <div class="habit-card">
           <a
             href="{{ url_for(
-                                'habit_page',
-                                habit_id=item['habit']['id']
-                            ) }}"
+                    'habit_page',
+                    habit_id=item['habit']['id']
+                ) }}"
           >
-            <h2>{{ item['habit']['name'] }}</h2>
+            <!-- Activity name -->
+
+            <div class="activity-card-header">
+
+              <h2>
+                  {{ item['habit']['name'] }}
+              </h2>
+          
+              <span class="today-value">
+                  {{ "%.0f"|format(item['today_total']) }}
+                  {{ item['habit']['unit'] }}
+                  today
+              </span>
+          
+          </div>
+          
+          <div class="activity-status">
+          
+              {% if item['is_active_today'] %}
+          
+                  <span class="status-dot active"></span>
+                  <span>Recorded today</span>
+          
+              {% else %}
+          
+                  <span class="status-dot"></span>
+                  <span>Not recorded today</span>
+          
+              {% endif %}
+          
+          </div>
+
+            <!-- Progress graph -->
 
             <div class="chart-container">
               <canvas
@@ -128,20 +158,15 @@
 
     <script>
       // Find all activity graphs on the dashboard.
-
       const charts = document.querySelectorAll("canvas[id^='chart-']");
 
       charts.forEach(function (canvas) {
         // Get graph data from HTML data attributes.
-
         const labels = JSON.parse(canvas.dataset.labels);
-
         const values = JSON.parse(canvas.dataset.values);
-
         const activityName = canvas.dataset.name;
 
         // Create the activity progress graph.
-
         new Chart(canvas, {
           type: "line",
 
@@ -151,21 +176,14 @@
             datasets: [
               {
                 label: activityName,
-
                 data: values,
-
                 tension: 0.3,
-
-                borderColor: "#9b6de3",
-
-                backgroundColor: "rgba(155, 109, 227, 0.15)",
-
-                pointBackgroundColor: "#9b6de3",
-
-                pointBorderColor: "#9b6de3",
-
+                // Pulse glacial blue graph theme
+                borderColor: "#38bdf8",
+                backgroundColor: "rgba(56, 189, 248, 0.15)",
+                pointBackgroundColor: "#38bdf8",
+                pointBorderColor: "#38bdf8",
                 pointRadius: 4,
-
                 fill: true,
               },
             ],
@@ -173,7 +191,6 @@
 
           options: {
             responsive: true,
-
             plugins: {
               legend: {
                 labels: {

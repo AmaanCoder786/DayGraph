@@ -2,19 +2,64 @@
    GLOBAL STYLES
    ============================================================ */
 
+:root {
+  --bg-main: #08111f;
+  --surface-card: #101b2e;
+  --surface-input: #08111f;
+  --border-color: #243552;
+
+  --accent-primary: #38bdf8;
+  --accent-secondary: #60a5fa;
+  --accent-glow: rgba(56, 189, 248, 0.25);
+
+  --text-main: #eaf2ff;
+  --text-muted: #8aa0c2;
+  --text-status: #6f86a8;
+
+  --card-radius: 14px;
+  --card-border: 1px solid var(--border-color);
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+}
+
 * {
   box-sizing: border-box;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-primary) var(--bg-main);
 }
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #120d1a;
-  color: #f3eef8;
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
 a {
   color: inherit;
+}
+
+/* ============================================================
+   GLOBAL SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
 }
 
 /* ============================================================
@@ -39,7 +84,6 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   gap: 20px;
 }
 
@@ -50,7 +94,7 @@ a {
 
 .dashboard-subtitle {
   margin: 6px 0 0;
-  color: #b9a9c9;
+  color: var(--text-muted);
   font-size: 0.95rem;
 }
 
@@ -65,11 +109,11 @@ a {
   margin: 35px auto 0;
   padding: 24px;
 
-  background: #1d1529;
-  border: 1px solid #332343;
+  background: var(--surface-card);
+  border: var(--card-border);
   border-radius: 16px;
 
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--card-shadow);
 }
 
 .summary-header {
@@ -83,7 +127,7 @@ a {
 
 .summary-header p {
   margin: 0;
-  color: #b9a9c9;
+  color: var(--text-muted);
   font-size: 0.95rem;
 }
 
@@ -100,8 +144,8 @@ a {
 .summary-card {
   padding: 20px;
 
-  background: #120d1a;
-  border: 1px solid #332343;
+  background: var(--bg-main);
+  border: var(--card-border);
   border-radius: 12px;
 
   display: flex;
@@ -114,17 +158,17 @@ a {
 }
 
 .summary-card:hover {
-  border-color: #6d3bb8;
+  border-color: var(--accent-primary);
   transform: translateY(-2px);
 }
 
 .summary-label {
-  color: #b9a9c9;
+  color: var(--text-muted);
   font-size: 0.85rem;
 }
 
 .summary-card strong {
-  color: #f3eef8;
+  color: var(--text-main);
   font-size: 1.8rem;
   font-weight: 600;
 }
@@ -153,13 +197,13 @@ a {
 }
 
 .habit-card {
-  background: #1d1529;
-  border: 1px solid #332343;
+  background: var(--surface-card);
+  border: var(--card-border);
   border-radius: 14px;
 
   padding: 20px;
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--card-shadow);
 
   transition:
     transform 0.2s ease,
@@ -169,10 +213,8 @@ a {
 
 .habit-card:hover {
   transform: translateY(-3px);
-
-  border-color: #6d3bb8;
-
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 15px var(--accent-glow);
 }
 
 .habit-card a {
@@ -183,9 +225,63 @@ a {
 .habit-card h2 {
   margin-top: 0;
   margin-bottom: 15px;
-
   font-size: 1.15rem;
 }
+
+/* ============================================================
+   ACTIVITY CARD HEADER
+   ============================================================ */
+
+.activity-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+  margin-bottom: 8px;
+}
+
+.activity-card-header h2 {
+  margin: 0;
+}
+
+.today-value {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* Keep activity status aligned directly under the activity name. */
+.activity-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin: 0 0 14px;
+
+  color: var(--text-status);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+/* Status indicator dot. */
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #42516a;
+}
+
+.status-dot.active {
+  background: var(--accent-primary);
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+/* ============================================================
+   ACTIVITY GRAPH
+   ============================================================ */
 
 .chart-container {
   width: 100%;
@@ -203,8 +299,8 @@ a {
   margin: 0 auto 50px;
   padding: 40px 20px;
 
-  background: #1d1529;
-  border: 1px solid #332343;
+  background: var(--surface-card);
+  border: var(--card-border);
   border-radius: 14px;
 
   text-align: center;
@@ -212,7 +308,7 @@ a {
 
 .empty-dashboard p {
   margin: 0 0 20px;
-  color: #b9a9c9;
+  color: var(--text-muted);
 }
 
 /* ============================================================
@@ -226,20 +322,23 @@ a {
 
   border-radius: 8px;
 
-  background: #6d3bb8;
-  color: #ffffff;
+  background: var(--accent-primary);
+  color: #040914;
 
-  border: 1px solid #8151c9;
+  border: 1px solid var(--accent-primary);
 
   text-decoration: none;
+  font-weight: 600;
+
+  box-shadow: 0 0 12px var(--accent-glow);
 
   transition:
-    background 0.2s ease,
+    filter 0.2s ease,
     transform 0.2s ease;
 }
 
 .add-habit-button:hover {
-  background: #8151c9;
+  filter: brightness(1.1);
   transform: translateY(-2px);
 }
 
@@ -264,7 +363,33 @@ a {
 
 .habit-header p {
   margin: 0;
-  color: #b9a9c9;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   ADD ACTIVITY BACK LINK
+   ============================================================ */
+
+.back-link {
+  display: inline-block;
+
+  margin-bottom: 18px;
+
+  color: var(--accent-primary);
+
+  text-decoration: none;
+
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--accent-secondary);
+  transform: translateX(-2px);
 }
 
 /* ============================================================
@@ -284,12 +409,12 @@ a {
 
 .habit-meta {
   margin: 0;
-  color: #b9a9c9;
+  color: var(--text-muted);
   font-size: 1rem;
 }
 
 .habit-meta span {
-  color: #9b6de3;
+  color: var(--accent-primary);
   font-weight: 500;
   text-transform: capitalize;
 }
@@ -304,22 +429,24 @@ a {
 
   border-radius: 50%;
 
-  background: #6b3bb8;
-  border: 1px solid #8151c9;
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
 
-  color: #ffffff;
+  color: #040914;
 
   text-decoration: none;
   font-size: 1.5rem;
   line-height: 1;
 
+  box-shadow: 0 0 12px var(--accent-glow);
+
   transition:
-    background 0.2s ease,
+    filter 0.2s ease,
     transform 0.2s ease;
 }
 
 .back-button:hover {
-  background: #8151c9;
+  filter: brightness(1.1);
   transform: translateX(-2px);
 }
 
@@ -345,9 +472,9 @@ a {
    ============================================================ */
 
 .habit-section {
-  background: #1d1529;
+  background: var(--surface-card);
 
-  border: 1px solid #332343;
+  border: var(--card-border);
   border-radius: 14px;
 
   padding: 20px;
@@ -377,17 +504,18 @@ a {
   padding: 10px 12px;
 
   border-radius: 8px;
-  border: 1px solid #332343;
+  border: 1px solid var(--border-color);
 
-  background: #120d1a;
-  color: #f3eef8;
+  background: var(--bg-main);
+  color: var(--text-main);
 
   font-size: 1rem;
 }
 
 .entry-form input:focus {
   outline: none;
-  border-color: #8151c9;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 .entry-form button {
@@ -396,20 +524,23 @@ a {
   white-space: nowrap;
 
   border-radius: 8px;
-  border: 1px solid #8151c9;
+  border: 1px solid var(--accent-primary);
 
-  background: #6d3bb8;
-  color: #ffffff;
+  background: var(--accent-primary);
+  color: #040914;
 
+  font-weight: 600;
   cursor: pointer;
 
+  box-shadow: 0 0 10px var(--accent-glow);
+
   transition:
-    background 0.2s ease,
+    filter 0.2s ease,
     transform 0.2s ease;
 }
 
 .entry-form button:hover {
-  background: #8151c9;
+  filter: brightness(1.1);
   transform: translateY(-2px);
 }
 
@@ -421,6 +552,30 @@ a {
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  max-height: 120px;
+  overflow-y: auto;
+
+  padding-right: 4px;
+}
+
+/* Custom scrollbar for today's entries. */
+.entries-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.entries-list::-webkit-scrollbar-track {
+  background: var(--bg-main);
+  border-radius: 10px;
+}
+
+.entries-list::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 10px;
+}
+
+.entries-list::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
 }
 
 .entry-row {
@@ -432,8 +587,8 @@ a {
 
   border-radius: 8px;
 
-  background: #120d1a;
-  border: 1px solid #332343;
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
 }
 
 .entry-value {
@@ -441,12 +596,12 @@ a {
 }
 
 .entry-time {
-  color: #b9a9c9;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
 .empty-message {
-  color: #b9a9c9;
+  color: var(--text-muted);
 }
 
 .total-box {
@@ -454,8 +609,8 @@ a {
 
   border-radius: 8px;
 
-  background: #120d1a;
-  border: 1px solid #332343;
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
 }
 
 .total-box span {
@@ -483,22 +638,24 @@ a {
   padding: 10px 16px;
 
   border-radius: 8px;
-  border: 1px solid #332343;
+  border: 1px solid var(--border-color);
 
-  background: #1d1529;
-  color: #b9a9c9;
+  background: var(--surface-card);
+  color: var(--text-muted);
 
   cursor: pointer;
 
   transition:
     background 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .history-button:hover,
 .history-button.active {
-  background: #6d3bb8;
-  color: #ffffff;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #040914;
 }
 
 /* ============================================================
@@ -566,5 +723,14 @@ a {
 
   .summary-card strong {
     font-size: 1.5rem;
+  }
+
+  .entry-form {
+    flex-wrap: wrap;
+  }
+
+  .entry-form input {
+    max-width: none;
+    flex: 1;
   }
 }

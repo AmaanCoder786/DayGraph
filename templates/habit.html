@@ -85,11 +85,6 @@
                 action="{{ url_for('add_entry', habit_id=habit['id']) }}"
                 method="POST"
             >
-
-                <label for="value">
-                    Value
-                </label>
-
                 <input
                     type="number"
                     id="value"
@@ -98,7 +93,6 @@
                     min="0"
                     required
                 >
-
                 <button type="submit">
                     Add Entry
                 </button>
@@ -234,87 +228,57 @@
     // Get graph data from the HTML data attributes.
 
     const chartData = document.getElementById('chartData');
-
     const labels = JSON.parse(chartData.dataset.labels);
     const values = JSON.parse(chartData.dataset.values);
-
     const ctx = document.getElementById('habitChart');
 
-
     // Create the activity progress graph.
-
     new Chart(ctx, {
-
         type: 'line',
-
         data: {
-
             labels: labels,
-
             datasets: [{
-
                 label: '{{ habit["name"] }}',
-
                 data: values,
+                tension: 0.3,
 
-                tension: 0.3
-
+                // Pulse glacial blue graph theme
+                borderColor: "#38bdf8",
+                backgroundColor: "rgba(56, 189, 248, 0.15)",
+                pointBackgroundColor: "#38bdf8",
+                pointBorderColor: "#38bdf8",
+                pointRadius: 4,
+                fill: true
             }]
-
         },
-
         options: {
-
             responsive: true,
-
             plugins: {
-
                 tooltip: {
-
                     callbacks: {
-
                         label: function(context) {
-
                             return context.parsed.y + ' {{ habit["unit"] }}';
-
                         }
-
                     }
-
                 }
-
             },
-
             scales: {
-
                 y: {
-
                     beginAtZero: true
-
                 }
-
             }
-
         }
-
     });
-
 
     // ============================================================
     // LAST 10 DAYS TOGGLE
     // ============================================================
-
     const historyButton = document.getElementById('historyButton');
-
     const historySection = document.getElementById('historySection');
 
-
     historyButton.addEventListener('click', function() {
-
         historySection.classList.toggle('show');
-
         historyButton.classList.toggle('active');
-
     });
 
 </script>
