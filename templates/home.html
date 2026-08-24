@@ -92,34 +92,27 @@
             <!-- Activity name -->
 
             <div class="activity-card-header">
+              <h2>{{ item['habit']['name'] }}</h2>
 
-              <h2>
-                  {{ item['habit']['name'] }}
-              </h2>
-          
               <span class="today-value">
-                  {{ "%.0f"|format(item['today_total']) }}
-                  {{ item['habit']['unit'] }}
-                  today
+                {{ "%.0f"|format(item['today_total']) }} {{
+                item['habit']['unit'] }} today
               </span>
-          
-          </div>
-          
-          <div class="activity-status">
-          
+            </div>
+
+            <div class="activity-status">
               {% if item['is_active_today'] %}
-          
-                  <span class="status-dot active"></span>
-                  <span>Recorded today</span>
-          
+
+              <span class="status-dot active"></span>
+              <span>Recorded today</span>
+
               {% else %}
-          
-                  <span class="status-dot"></span>
-                  <span>Not recorded today</span>
-          
+
+              <span class="status-dot"></span>
+              <span>Not recorded today</span>
+
               {% endif %}
-          
-          </div>
+            </div>
 
             <!-- Progress graph -->
 
@@ -188,13 +181,12 @@
               },
             ],
           },
-
           options: {
             responsive: true,
             plugins: {
               legend: {
                 labels: {
-                  color: "#f3eef8",
+                  color: "#eaf2ff",
                 },
               },
             },
@@ -202,11 +194,11 @@
             scales: {
               x: {
                 ticks: {
-                  color: "#b9a9c9",
+                  color: "#8aa0c2",
                 },
 
                 grid: {
-                  color: "rgba(255, 255, 255, 0.05)",
+                  color: "rgba(96, 165, 250, 0.08)",
                 },
               },
 
@@ -214,11 +206,11 @@
                 beginAtZero: true,
 
                 ticks: {
-                  color: "#b9a9c9",
+                  color: "#8aa0c2",
                 },
 
                 grid: {
-                  color: "rgba(255, 255, 255, 0.05)",
+                  color: "rgba(96, 165, 250, 0.08)",
                 },
               },
             },

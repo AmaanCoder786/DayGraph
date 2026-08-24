@@ -1,287 +1,256 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>{{ habit['name'] }} - Pulse</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
 
-<body>
-
-<main class="habit-page">
-
-    <!-- ============================================================
+  <body>
+    <main class="habit-page">
+      <!-- ============================================================
          ACTIVITY HEADER
          ============================================================ -->
 
-    <header class="habit-header">
-
+      <header class="habit-header">
         <div class="habit-title-row">
+          <a
+            href="{{ url_for('home') }}"
+            class="back-button"
+            title="Back to Pulse"
+          >
+            ←
+          </a>
 
-            <a href="{{ url_for('home') }}" class="back-button" title="Back to Pulse">
-                ←
-            </a>
+          <div>
+            <h1>{{ habit['name'] }}</h1>
 
-            <div>
+            <p class="habit-meta">
+              <span>{{ habit['unit'] }}</span>
 
-                <h1>{{ habit['name'] }}</h1>
-
-                <p class="habit-meta">
-
-                    <span>{{ habit['unit'] }}</span>
-
-                    ·
-
-                    {% if habit['direction'] == 'higher' %}
-                        Higher is better
-                    {% else %}
-                        Lower is better
-                    {% endif %}
-
-                </p>
-
-            </div>
-
+              · {% if habit['direction'] == 'higher' %} Higher is better {% else
+              %} Lower is better {% endif %}
+            </p>
+          </div>
         </div>
+      </header>
 
-    </header>
-
-
-    <!-- ============================================================
+      <!-- ============================================================
          ACTIVITY SUMMARY
          ============================================================ -->
 
-    <div class="habit-summary-grid">
-
-
+      <div class="habit-summary-grid">
         <!-- TODAY'S TOTAL -->
 
         <section class="habit-section">
+          <h2>Today's Total</h2>
 
-            <h2>Today's Total</h2>
-
-            <div class="total-box">
-
-                <span>
-                    {{ "%.0f"|format(total) }} {{ habit['unit'] }}
-                </span>
-
-            </div>
-
+          <div class="total-box">
+            <span> {{ "%.0f"|format(total) }} {{ habit['unit'] }} </span>
+          </div>
         </section>
-
 
         <!-- ADD TODAY'S ENTRY -->
 
         <section class="habit-section">
+          <h2>Add Today's Entry</h2>
 
-            <h2>Add Today's Entry</h2>
-
-            <form
-                class="entry-form"
-                action="{{ url_for('add_entry', habit_id=habit['id']) }}"
-                method="POST"
-            >
-                <input
-                    type="number"
-                    id="value"
-                    name="value"
-                    step="any"
-                    min="0"
-                    required
-                >
-                <button type="submit">
-                    Add Entry
-                </button>
-
-            </form>
-
+          <form
+            class="entry-form"
+            action="{{ url_for('add_entry', habit_id=habit['id']) }}"
+            method="POST"
+          >
+            <input
+              type="number"
+              id="value"
+              name="value"
+              step="any"
+              min="0"
+              required
+            />
+            <button type="submit">Add Entry</button>
+          </form>
         </section>
-
 
         <!-- TODAY'S ENTRIES -->
 
         <section class="habit-section">
+          <h2>Today's Entries</h2>
 
-            <h2>Today's Entries</h2>
+          {% if entries %}
 
-            {% if entries %}
+          <div class="entries-list">
+            {% for entry in entries %}
 
-                <div class="entries-list">
+            <div class="entry-row">
+              <span class="entry-value">
+                {{ "%.0f"|format(entry['value']) }} {{ habit['unit'] }}
+              </span>
 
-                    {% for entry in entries %}
+              <span class="entry-time"> {{ entry['display_time'] }} </span>
+            </div>
 
-                        <div class="entry-row">
+            {% endfor %}
+          </div>
 
-                            <span class="entry-value">
-                                {{ "%.0f"|format(entry['value']) }} {{ habit['unit'] }}
-                            </span>
+          {% else %}
 
-                            <span class="entry-time">
-                                {{ entry['display_time'] }}
-                            </span>
+          <p class="empty-message">No entries recorded today.</p>
 
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-            {% else %}
-
-                <p class="empty-message">
-                    No entries recorded today.
-                </p>
-
-            {% endif %}
-
+          {% endif %}
         </section>
+      </div>
 
-    </div>
-
-
-    <!-- ============================================================
+      <!-- ============================================================
          ACTIVITY PROGRESS GRAPH
          ============================================================ -->
 
-    <section class="habit-section">
-
+      <section class="habit-section">
         <h2>Activity Progress</h2>
 
         <div class="habit-chart-container">
-            <canvas id="habitChart"></canvas>
+          <canvas id="habitChart"></canvas>
         </div>
-
 
         <!-- HISTORY BUTTON -->
 
-        <button id="historyButton" class="history-button">
-            Last 10 Days
-        </button>
-
+        <button id="historyButton" class="history-button">Last 10 Days</button>
 
         <!-- HISTORICAL DATA -->
 
         <div id="historySection" class="history-section">
+          <h3>Last 10 Days</h3>
 
-            <h3>Last 10 Days</h3>
+          {% if daily_totals %}
 
-            {% if daily_totals %}
+          <div class="entries-list">
+            {% for day in daily_totals[:10] %}
 
-                <div class="entries-list">
+            <div class="entry-row">
+              <span class="entry-value"> {{ day['date'] }} </span>
 
-                    {% for day in daily_totals[:10] %}
+              <span class="entry-time">
+                {{ "%.0f"|format(day['total']) }} {{ habit['unit'] }}
+              </span>
+            </div>
 
-                        <div class="entry-row">
+            {% endfor %}
+          </div>
 
-                            <span class="entry-value">
-                                {{ day['date'] }}
-                            </span>
+          {% else %}
 
-                            <span class="entry-time">
-                                {{ "%.0f"|format(day['total']) }} {{ habit['unit'] }}
-                            </span>
+          <p class="empty-message">No historical data available.</p>
 
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-            {% else %}
-
-                <p class="empty-message">
-                    No historical data available.
-                </p>
-
-            {% endif %}
-
+          {% endif %}
         </div>
+      </section>
 
-    </section>
-
-
-    <!-- ============================================================
+      <!-- ============================================================
          CHART DATA
          ============================================================ -->
 
-    <div
+      <div
         id="chartData"
         data-labels='{{ daily_totals | map(attribute="date") | list | tojson }}'
         data-values='{{ daily_totals | map(attribute="total") | list | tojson }}'
-    ></div>
+      ></div>
+    </main>
 
-</main>
-
-
-<!-- ============================================================
+    <!-- ============================================================
      CHART.JS
      ============================================================ -->
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
+    <script>
+      // Get graph data from the HTML data attributes.
 
-    // Get graph data from the HTML data attributes.
+      const chartData = document.getElementById("chartData");
+      const labels = JSON.parse(chartData.dataset.labels);
+      const values = JSON.parse(chartData.dataset.values);
+      const ctx = document.getElementById("habitChart");
 
-    const chartData = document.getElementById('chartData');
-    const labels = JSON.parse(chartData.dataset.labels);
-    const values = JSON.parse(chartData.dataset.values);
-    const ctx = document.getElementById('habitChart');
-
-    // Create the activity progress graph.
-    new Chart(ctx, {
-        type: 'line',
+      // Create the activity progress graph.
+      new Chart(ctx, {
+        type: "line",
         data: {
-            labels: labels,
-            datasets: [{
-                label: '{{ habit["name"] }}',
-                data: values,
-                tension: 0.3,
-
-                // Pulse glacial blue graph theme
-                borderColor: "#38bdf8",
-                backgroundColor: "rgba(56, 189, 248, 0.15)",
-                pointBackgroundColor: "#38bdf8",
-                pointBorderColor: "#38bdf8",
-                pointRadius: 4,
-                fill: true
-            }]
+          labels: labels,
+          datasets: [
+            {
+              label: '{{ habit["name"] }}',
+              data: values,
+              tension: 0.3,
+              // Pulse glacial blue graph theme
+              borderColor: "#38bdf8",
+              backgroundColor: "rgba(56, 189, 248, 0.15)",
+              pointBackgroundColor: "#38bdf8",
+              pointBorderColor: "#38bdf8",
+              pointRadius: 4,
+              fill: true,
+            },
+          ],
         },
         options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.parsed.y + ' {{ habit["unit"] }}';
-                        }
-                    }
-                }
+          responsive: true,
+
+          plugins: {
+            legend: {
+              labels: {
+                color: "#eaf2ff",
+              },
             },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
 
-    // ============================================================
-    // LAST 10 DAYS TOGGLE
-    // ============================================================
-    const historyButton = document.getElementById('historyButton');
-    const historySection = document.getElementById('historySection');
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return context.parsed.y + ' {{ habit["unit"] }}';
+                },
+              },
+            },
+          },
 
-    historyButton.addEventListener('click', function() {
-        historySection.classList.toggle('show');
-        historyButton.classList.toggle('active');
-    });
+          scales: {
+            x: {
+              ticks: {
+                color: "#8aa0c2",
+              },
 
-</script>
+              grid: {
+                color: "rgba(96, 165, 250, 0.08)",
+              },
+            },
 
-</body>
+            y: {
+              beginAtZero: true,
+
+              ticks: {
+                color: "#8aa0c2",
+              },
+
+              grid: {
+                color: "rgba(96, 165, 250, 0.08)",
+              },
+            },
+          },
+        },
+      });
+
+      // ============================================================
+      // LAST 10 DAYS TOGGLE
+      // ============================================================
+      const historyButton = document.getElementById("historyButton");
+      const historySection = document.getElementById("historySection");
+
+      historyButton.addEventListener("click", function () {
+        historySection.classList.toggle("show");
+        historyButton.classList.toggle("active");
+      });
+    </script>
+  </body>
 </html>

@@ -250,7 +250,7 @@ a {
   white-space: nowrap;
 }
 
-/* Keep activity status aligned directly under the activity name. */
+/* Activity recording status. */
 .activity-status {
   display: flex;
   align-items: center;
@@ -367,29 +367,36 @@ a {
 }
 
 /* ============================================================
-   ADD ACTIVITY BACK LINK
+   BACK LINK
    ============================================================ */
 
 .back-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 
   margin-bottom: 18px;
+  padding: 7px 10px;
+
+  border: 1px solid transparent;
+  border-radius: 7px;
 
   color: var(--accent-primary);
 
   text-decoration: none;
-
   font-size: 0.95rem;
   font-weight: 500;
 
   transition:
     color 0.2s ease,
-    transform 0.2s ease;
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .back-link:hover {
-  color: var(--accent-secondary);
-  transform: translateX(-2px);
+  color: var(--text-main);
+  background: var(--surface-card);
+  border-color: var(--border-color);
 }
 
 /* ============================================================
@@ -486,13 +493,19 @@ a {
 }
 
 /* ============================================================
-   ENTRY FORM
+   HABIT ENTRY FORM
    ============================================================ */
 
 .entry-form {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+/* The "Value" label is unnecessary because the card title
+   already explains what the input is for. */
+.entry-form > label {
+  display: none;
 }
 
 .entry-form input {
@@ -543,7 +556,82 @@ a {
   filter: brightness(1.1);
   transform: translateY(-2px);
 }
+/* ============================================================
+   ADD ACTIVITY FORM
+   ============================================================ */
 
+.habit-header + .habit-section .entry-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: end;
+}
+
+.habit-header + .habit-section .entry-form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.habit-header + .habit-section .entry-form label {
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.habit-header + .habit-section .entry-form input,
+.habit-header + .habit-section .entry-form select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+
+  background: var(--bg-main);
+  color: var(--text-main);
+
+  font-size: 0.95rem;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.habit-header + .habit-section .entry-form input::placeholder {
+  color: var(--text-status);
+}
+
+.habit-header + .habit-section .entry-form input:focus,
+.habit-header + .habit-section .entry-form select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.habit-header + .habit-section .entry-form select {
+  cursor: pointer;
+}
+
+.habit-header + .habit-section .entry-form button {
+  justify-self: end;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1px solid var(--accent-primary);
+  border-radius: 8px;
+  background: var(--accent-primary);
+  color: #040914;
+  font-weight: 600;
+  box-shadow: 0 0 10px var(--accent-glow);
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.habit-header + .habit-section .entry-form button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
 /* ============================================================
    TODAY'S ENTRIES
    ============================================================ */
@@ -690,6 +778,14 @@ a {
 
   .habit-summary-grid .habit-section {
     margin-bottom: 20px;
+  }
+
+  .habit-header + .habit-section .entry-form {
+    grid-template-columns: 1fr;
+  }
+
+  .habit-header + .habit-section .entry-form button {
+    justify-self: start;
   }
 }
 
