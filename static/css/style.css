@@ -632,6 +632,79 @@ a {
   filter: brightness(1.1);
   transform: translateY(-2px);
 }
+
+/* ============================================================
+   ADD ACTIVITY — FINAL CONTROL SIZING
+   ============================================================ */
+
+.habit-header + .habit-section .entry-form input,
+.habit-header + .habit-section .entry-form select {
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    padding: 0 12px;
+}
+
+.habit-header + .habit-section .entry-form button {
+    height: 44px;
+    min-height: 44px;
+    padding: 0 20px;
+}
+
+.habit-header + .habit-section .entry-form {
+    align-items: end;
+}
+
+/* ============================================================
+   ADD ACTIVITY — FINAL POLISH
+   ============================================================ */
+
+.habit-header {
+    margin-bottom: 28px;
+}
+
+.habit-header .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 28px;
+
+    color: var(--accent-primary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.habit-header .back-link:hover {
+    color: var(--accent-secondary);
+    transform: translateX(-3px);
+}
+
+.habit-header h1 {
+    margin-bottom: 6px;
+}
+
+.habit-header p {
+    margin-top: 0;
+}
+
+.habit-header + .habit-section {
+    max-width: 900px;
+}
+
+.habit-header + .habit-section .entry-form {
+    padding: 24px;
+}
+
+.habit-header + .habit-section .entry-form > div {
+    min-width: 0;
+}
+
 /* ============================================================
    TODAY'S ENTRIES
    ============================================================ */
