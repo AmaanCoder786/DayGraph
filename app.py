@@ -20,13 +20,8 @@ def home():
 
     habit_data = []
 
-    # Today's date
-    today = datetime.now().date().isoformat()
-
-    # Get daily totals and today's total for each activity
+    # Get daily totals and today's status for each activity
     for habit in habits:
-
-        # Daily totals for the progress graph
         daily_totals = conn.execute(
             """
             SELECT date, SUM(value) AS total
@@ -38,7 +33,8 @@ def home():
             (habit['id'],)
         ).fetchall()
 
-        # Today's total for this activity
+        today = datetime.now().date().isoformat()
+
         today_total = conn.execute(
             """
             SELECT COALESCE(SUM(value), 0) AS total
@@ -48,33 +44,29 @@ def home():
             (habit['id'], today)
         ).fetchone()['total']
 
-        # Check whether this activity has been recorded today
         today_entry = conn.execute(
             """
-            SELECT COUNT(*)
+            SELECT id
             FROM entries
             WHERE habit_id = ? AND date = ?
+            LIMIT 1
             """,
             (habit['id'], today)
-        ).fetchone()[0]
-
-        is_active_today = today_entry > 0
+        ).fetchone()
 
         habit_data.append({
             'habit': habit,
             'daily_totals': daily_totals,
             'today_total': today_total,
-            'is_active_today': is_active_today
+            'recorded_today': today_entry is not None
         })
 
     # ========================================================
     # TODAY'S PULSE SUMMARY
     # ========================================================
 
-    # Number of activities currently being tracked
     activity_count = len(habits)
 
-    # Number of entries recorded today
     entry_count = conn.execute(
         """
         SELECT COUNT(*)
@@ -84,7 +76,6 @@ def home():
         (today,)
     ).fetchone()[0]
 
-    # Number of activities that have at least one entry today
     active_today = conn.execute(
         """
         SELECT COUNT(DISTINCT habit_id)
@@ -128,7 +119,8 @@ def habit_page(habit_id):
     # Get today's individual entries
     entries = conn.execute(
         """
-        SELECT * FROM entries
+        SELECT *
+        FROM entries
         WHERE habit_id = ? AND date = ?
         ORDER BY created_at DESC
         """,
@@ -185,11 +177,24 @@ def habit_page(habit_id):
 
 @app.route('/habit/<int:habit_id>/add-entry', methods=['POST'])
 def add_entry(habit_id):
-    value = request.form['value'].strip()
+    raw_value = request.form.get('value', '').strip()
 
+    # Make sure a value was submitted
+    if not raw_value:
+        return "Value is required", 400
+
+    # Convert the submitted value to a number
     try:
-        value = float(value)
+        value = float(raw_value)
     except ValueError:
+        return "Invalid value", 400
+
+    # Reject negative values
+    if value < 0:
+        return "Value cannot be negative", 400
+
+    # Reject NaN and infinite values
+    if not float('-inf') < value < float('inf'):
         return "Invalid value", 400
 
     today = datetime.now().date().isoformat()
@@ -228,9 +233,21 @@ def add_entry(habit_id):
 @app.route('/add-habit', methods=['GET', 'POST'])
 def add_habit():
     if request.method == 'POST':
-        name = request.form['name'].strip()
-        unit = request.form['unit'].strip()
-        direction = request.form['direction']
+        name = request.form.get('name', '').strip()
+        unit = request.form.get('unit', '').strip()
+        direction = request.form.get('direction', '').strip()
+
+        # Validate activity name
+        if not name:
+            return "Activity name is required", 400
+
+        # Validate unit
+        if not unit:
+            return "Unit is required", 400
+
+        # Validate direction
+        if direction not in ('higher', 'lower'):
+            return "Invalid direction", 400
 
         conn = get_db_connection()
 

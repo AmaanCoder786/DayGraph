@@ -1,11 +1,13 @@
 import sqlite3
+from pathlib import Path
 
 
 # ============================================================
 # DATABASE CONFIGURATION
 # ============================================================
 
-DATABASE = 'database/daygraph.db'
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE = BASE_DIR / 'database' / 'daygraph.db'
 
 
 # ============================================================
@@ -15,6 +17,9 @@ DATABASE = 'database/daygraph.db'
 def get_db_connection():
     # Create a connection to the SQLite database.
     conn = sqlite3.connect(DATABASE)
+
+    # Enable SQLite foreign-key enforcement.
+    conn.execute("PRAGMA foreign_keys = ON")
 
     # Return rows as dictionary-like objects so we can use
     # column names such as row['name'] instead of row[0].
