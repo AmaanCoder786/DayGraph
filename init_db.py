@@ -1,11 +1,12 @@
 import sqlite3
-
+from pathlib import Path
 
 # ============================================================
 # DATABASE CONFIGURATION
 # ============================================================
 
-DATABASE = 'database/daygraph.db'
+BASE_DIR = Path(__file__).resolve().parent
+DATABASE = BASE_DIR / 'database' / 'daygraph.db'
 
 
 # ============================================================
@@ -13,6 +14,7 @@ DATABASE = 'database/daygraph.db'
 # ============================================================
 
 conn = sqlite3.connect(DATABASE)
+conn.execute("PRAGMA foreign_keys = ON")  # Enable foreign key support
 cursor = conn.cursor()
 
 
